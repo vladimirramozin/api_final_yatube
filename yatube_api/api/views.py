@@ -32,7 +32,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'retrieve':
-           return (ReadOnly(),)
+            return (ReadOnly(),)
         return super().get_permissions()
     permission_classes = (OwnerOrReadOnly,)
     pagination_class = LimitOffsetPagination
@@ -41,14 +41,14 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-
 class GroupViewSet(ListModelViewSet):
     pagination_class = None
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
     def get_permissions(self):
         if self.action == 'retrieve':
-           return (ReadOnly(),)
+            return (ReadOnly(),)
         return super().get_permissions()
     permission_classes = (OwnerOrReadOnly,)
 
@@ -61,12 +61,13 @@ class FollowViewSet(CreateorListViewSet):
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     pagination_class = None
-    search_fields = ('following__username', ) 
+    search_fields = ('following__username', )
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = None
+
     def get_queryset(self):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         return post_instance.comments.all()
@@ -74,10 +75,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         serializer.save(author=self.request.user, post=post_instance)
+
     def get_permissions(self):
         if self.action == 'retrieve':
-           return (ReadOnly(),)
-        return super().get_permissions() 
+            return (ReadOnly(),)
+        return super().get_permissions()
     permission_classes = (OwnerOrReadOnly,)
-
-
