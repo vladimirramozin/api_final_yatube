@@ -56,8 +56,10 @@ class GroupViewSet(ListModelViewSet):
 class FollowViewSet(CreateorListViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    def get_queryset(self):
+        post_instance = Follow.objects.filter(user=self.request.user)
+        return post_instance
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     pagination_class = None
