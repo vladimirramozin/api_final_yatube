@@ -56,6 +56,7 @@ class GroupViewSet(ListModelViewSet):
 class FollowViewSet(CreateorListViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
     def get_queryset(self):
         post_instance = Follow.objects.filter(user=self.request.user)
         return post_instance
