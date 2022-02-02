@@ -29,11 +29,6 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
     permission_classes = (OwnerOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
@@ -45,32 +40,27 @@ class GroupViewSet(ListModelViewSet):
     pagination_class = None
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
     permission_classes = (OwnerOrReadOnly,)
 
 
 class FollowViewSet(CreateorListViewSet):
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def get_queryset(self):
-        post_instance = Follow.objects.filter(user=self.request.user)
-        return post_instance
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     pagination_class = None
     search_fields = ('following__username', )
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        post_instance = Follow.objects.filter(user=self.request.user)
+        return post_instance
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = None
-
+    permission_classes = (OwnerOrReadOnly,)
     def get_queryset(self):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         return post_instance.comments.all()
@@ -79,8 +69,5 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         serializer.save(author=self.request.user, post=post_instance)
 
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
-    permission_classes = (OwnerOrReadOnly,)
+
+    
