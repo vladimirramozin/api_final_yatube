@@ -8,7 +8,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from api.serializers import (CommentSerializer, FollowSerializer,
                              GroupSerializer, PostSerializer, UserSerializer)
 
-from .permissions import OwnerOrReadOnly, ReadOnly
+from .permissions import OwnerOrReadOnly
 
 
 class ListModelViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
@@ -57,10 +57,12 @@ class FollowViewSet(CreateorListViewSet):
         post_instance = Follow.objects.filter(user=self.request.user)
         return post_instance
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = None
     permission_classes = (OwnerOrReadOnly,)
+
     def get_queryset(self):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         return post_instance.comments.all()
@@ -68,6 +70,3 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post_instance = get_object_or_404(Post, id=self.kwargs['id'])
         serializer.save(author=self.request.user, post=post_instance)
-
-
-    
