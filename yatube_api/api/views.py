@@ -29,9 +29,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (OwnerOrReadOnly,)
     pagination_class = LimitOffsetPagination
-
+    permission_classes = (OwnerOrReadOnly,)
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -40,11 +39,11 @@ class GroupViewSet(ListModelViewSet):
     pagination_class = None
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (OwnerOrReadOnly,)
+
 
 
 class FollowViewSet(CreateorListViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (OwnerOrReadOnly,)
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     pagination_class = None
